@@ -1,0 +1,84 @@
+version: "3.3"
+services:
+   nginx:
+      depends_on:
+         - pgsql
+         - php
+      restart: always
+      build:
+        dockerfile: Dockerfile
+        context: ./nginx
+      environment:
+         TZ: America/Argentina/Buenos_Aires
+      ports:
+         - '8081:81' # localhost:8081 frontend
+         - '8082:82' # localhost:8082 backend
+
+      volumes:
+         - ./files:/var/www/html/
+      container_name: bocknerds_ngnix
+   pgsql:
+      build:
+         dockerfile: Dockerfile
+         context: ./pgsql
+      restart: always
+      environment:
+         POSTGRES_USER: "root"
+         POSTGRES_PASSWORD: "root"
+         POSTGRES_DB: "test"
+      ports:
+         - '5432:5432'
+      volumes:
+         - "./var/lib/pgdata:/var/lib/postgresql/data"
+      container_name: bocknerds_pgsql
+   php:
+      depends_on:
+         - redis
+         - mail
+         - selenium-hub
+         - rabbitmq
+      restart: always
+      build:
+         dockerfile: Dockerfile
+         context: ./php
+         args:
+            UID: 1000
+            GID: 1000
+      ports:
+         - '9002:9000'      
+      volumes:
+         - "./files:/var/www/html/"
+      container_name: bocknerds_php
+      links:
+         - selenium-hub
+   redis:
+      build:
+         dockerfile: Dockerfile
+         context: ./redis
+      ports:
+         - '6379:6379'
+      container_name: bocknerds_redis
+   mail:
+      build:
+         dockerfile: Dockerfile
+         context: ./mailhog
+      logging:
+         driver: 'none'
+      ports:
+         - 1025:1025 # smtp server
+         - 8025:8025 # localhost:8025 web
+   selenium-hub:
+      image: selenium/hub
+      container_name: selenium-hub
+      ports:
+         - "4442:4442"
+         - "4443:4443"
+         - "4444:4444"
+   rabbitmq:
+      image: rabbitmq:3.8-alpine
+      environment:
+         TZ: America/Argentina/Buenos_Aires
+      ports:
+         - '5672:49582'
+         - '15692:15692'
+      container_name: bocknerds_rabbitmq
