@@ -45,7 +45,8 @@ services:
             UID: 1000
             GID: 1000
       ports:
-         - '9002:9000'      
+         - '9002:9000'
+         #- '8087:8087' #used for Ratchet socket connection
       volumes:
          - "./files:/var/www/html/"
       container_name: bocknerds_php
@@ -75,10 +76,13 @@ services:
          - "4443:4443"
          - "4444:4444"
    rabbitmq:
-      image: rabbitmq:3.8-alpine
+      build:
+         dockerfile: Dockerfile
+         context: ./rabbitmq
       environment:
          TZ: America/Argentina/Buenos_Aires
       ports:
-         - '5672:49582'
+         - '5672:5672'
+         - '5673:5673'
          - '15692:15692'
       container_name: bocknerds_rabbitmq
