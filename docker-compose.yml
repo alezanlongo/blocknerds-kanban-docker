@@ -35,7 +35,7 @@ services:
       depends_on:
          - redis
          - mail
-         - selenium-hub
+#         - selenium-hub
          - rabbitmq
       restart: always
       build:
@@ -50,8 +50,6 @@ services:
       volumes:
          - "./files:/var/www/html/"
       container_name: bocknerds_php
-      links:
-         - selenium-hub
    redis:
       build:
          dockerfile: Dockerfile
@@ -68,21 +66,22 @@ services:
       ports:
          - 1025:1025 # smtp server
          - 8025:8025 # localhost:8025 web
-   selenium-hub:
-      image: selenium/hub
-      container_name: selenium-hub
-      ports:
-         - "4442:4442"
-         - "4443:4443"
-         - "4444:4444"
+#   selenium-hub:
+#      image: selenium/hub
+#      container_name: selenium-hub
+#      ports:
+#         - "4442:4442"
+#         - "4443:4443"
+#         - "4444:4444"
    rabbitmq:
       build:
          dockerfile: Dockerfile
          context: ./rabbitmq
+      restart: unless-stopped
       environment:
          TZ: America/Argentina/Buenos_Aires
       ports:
          - '5672:5672'
-         - '15675:5675' #web MQTT
+         - '15675:15675' #web MQTT
          - '15692:15692'
       container_name: bocknerds_rabbitmq
