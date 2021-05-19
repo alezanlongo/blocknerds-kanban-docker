@@ -83,6 +83,6 @@ services:
          TZ: America/Argentina/Buenos_Aires
       ports:
          - '5672:5672'
-         - '5673:5673'
+         - '15675:5675' #web MQTT
          - '15692:15692'
       container_name: bocknerds_rabbitmq
