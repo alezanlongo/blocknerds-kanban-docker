@@ -83,5 +83,6 @@ services:
       ports:
          - '5672:5672'
          - '15675:15675' #web MQTT
+         - '1883:1883' # MQTT
          - '15692:15692'
       container_name: bocknerds_rabbitmq
